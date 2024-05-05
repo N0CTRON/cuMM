@@ -7,17 +7,30 @@
 using namespace std::literals::chrono_literals;
 
 typedef std::chrono::high_resolution_clock::time_point timePoint;
+typedef short typeToAlloc;
 
 int main()
 {
-	constexpr size_t elems = 32 * 500;
+	constexpr size_t elems = 32 * 1000;
+	constexpr size_t elemsResized = 64 * 1000;
 
-	AOS<short> number(elems); //Init with 32k numbers
+	AOS<typeToAlloc> number(elems); //Init with 16k numbers
+	cuMM<typeToAlloc> gpuManager;
+
+	timePoint start;
+	timePoint end;
 	
-	timePoint start = std::chrono::high_resolution_clock::now();
-	cuMM<short> gpuManager(elems); //Init with 32k numbers
-	timePoint end = std::chrono::high_resolution_clock::now();
-	std::cout << "cuMM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms to allocate " << elems * sizeof(short) << " bytes.\n";
+	//Malloc
+	start = std::chrono::high_resolution_clock::now();
+	gpuManager.malloc(elems); //Init with 32k numbers
+	end = std::chrono::high_resolution_clock::now();
+	std::cout << "cuMM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms to allocate " << gpuManager.sizeBytes() << " bytes.\n";
+
+	//Resize
+	start = std::chrono::high_resolution_clock::now();
+	gpuManager.resize(elemsResized); //Init with 32k numbers
+	end = std::chrono::high_resolution_clock::now();
+	std::cout << "cuMM took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms to resize to " << gpuManager.sizeBytes() << " bytes.\n";
 
 	//manager.free(); <-- we don't need this cuz we have "~cuMM" :), you can still do this if you wanna be 100% save[would recommend on bigger projects].
 
