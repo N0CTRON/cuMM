@@ -25,25 +25,38 @@ public:
 		}
 	}
 
-	void resize(size_t newSize)
+	void resize(size_t newElems)
 	{
-		devType* newPtr;
+		if (newElems == 0)
+		{
+			free();
+			return;
+		}
+
+		devType* newPtr = nullptr;
+		size_t newSize = sizeof(devType) * newElems;
 		cudaMalloc(&newPtr, newSize);
+
 		if (newPtr != nullptr)
 		{
-			cudaMemcpy(newPtr, data, currentSizeBytes < newSize ? currentSizeBytes : newSize, cudaMemcpyHostToHost);
+			cudaMemcpy(newPtr, data, currentSizeBytes < newSize ? currentSizeBytes : newSize, cudaMemcpyDeviceToDevice);
 			cudaFree(data);
+			data = newPtr;
+			currentSizeBytes = newSize;
 		}
-		data = newPtr;
-	};
+		else throw "CuMM couldn't resize: \"newPtr\" is nullPtr. Keeping old memory.\n";
+	}
+
+	size_t size() { return currentSizeBytes / sizeof(devType); }
+	size_t sizeBytes() { return currentSizeBytes; }
 
 	cuMM() {};
-
 	cuMM(size_t elems) //same as cuMalloc cuz overhead 'n stuff
 	{
 		currentSizeBytes = sizeof(devType) * elems;
 		cudaMalloc(&data, currentSizeBytes);
 	};
-
 	~cuMM() { std::thread(free); }
+
+	devType& operator[] (const size_t& index) { return this->data[index]; }
 };
