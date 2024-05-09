@@ -47,6 +47,13 @@ public:
 		else throw "CuMM couldn't resize: \"newPtr\" is nullPtr. Keeping old memory.\n";
 	}
 
+	template <typename devArray>
+	void copy(devArray toCopy, size_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
+	{
+		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)toCopy, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
+		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)toCopy, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
+	}
+
 	size_t size() { return currentSizeBytes / sizeof(devType); }
 	size_t sizeBytes() { return currentSizeBytes; }
 
