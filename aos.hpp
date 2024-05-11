@@ -15,14 +15,14 @@ public:
 	{
 		vsize = nSize;
 		data = (arrType*)malloc(sizeof(arrType) * nSize);
-		for (size_t i = 0; i < nSize; ++i) data[i] = arrType(NULL);
+		for (size_t i = 0; i < nSize; ++i) this->data[i] = arrType(NULL);
 	}
 
 	void init(size_t nSize, arrType defaultVal)
 	{
 		vsize = nSize;
 		data = (arrType*)malloc(sizeof(arrType) * nSize);
-		for (size_t i = 0; i < nSize; ++i) data[i] = arrType(defaultVal);
+		for (size_t i = 0; i < nSize; ++i) this->data[i] = arrType(defaultVal);
 	}
 
 	void resize(size_t nSize)
@@ -49,7 +49,7 @@ public:
 	size_t size() { return vsize; }
 
 	AOS(size_t nSize) { init(nSize); };
-	AOS(size_t nSize, size_t defaultVal) { init(nSize, defaultVal); };
+	AOS(size_t nSize, arrType defaultVal) { init(nSize, defaultVal); };
 	AOS() {};
 	~AOS() { std::thread(suicide); } //<-- Threading was tested, about 1.9 times faster than calling "suicide" from main thread
 
