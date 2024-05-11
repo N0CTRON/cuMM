@@ -4,7 +4,10 @@
 #include "cuMM.cu"
 #include "aos.hpp" //<-- In this demo, we'll use the Array On Steroids library, but you can use any datatype you want
 
-//Following is a demo of cuMM, licensed under Apache 2.0
+// This is a demo of the "cuMM" library, devoloped by XeTute. 
+// It uses the "AOS" header-only libraries, which are also dev. by XeTute.
+// XeTutes website: "https://xetute.neocities.org/"
+// AOS GitHub: "https://www.github.com/N0CTRON/array-on-steriods/"
 
 using namespace std::literals::chrono_literals;
 
