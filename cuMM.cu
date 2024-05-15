@@ -8,9 +8,9 @@ class cuMM
 {
 public:
 	devType* data = nullptr;
-	size_t currentSizeBytes = NULL;
+	std::uint64_t currentSizeBytes = NULL;
 
-	void malloc(size_t elems)
+	void malloc(std::uint64_t elems)
 	{
 		currentSizeBytes = sizeof(devType) * elems;
 		cudaMalloc(&data, currentSizeBytes);
@@ -25,7 +25,7 @@ public:
 		}
 	}
 
-	void resize(size_t newElems)
+	void resize(std::uint64_t newElems)
 	{
 		if (newElems == 0)
 		{
@@ -34,7 +34,7 @@ public:
 		}
 
 		devType* newPtr = nullptr;
-		size_t newSize = sizeof(devType) * newElems;
+		std::uint64_t newSize = sizeof(devType) * newElems;
 		cudaMalloc(&newPtr, newSize);
 
 		if (newPtr != nullptr)
@@ -48,22 +48,22 @@ public:
 	}
 
 	template <typename devArray>
-	void copy(devArray toCopy, size_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
+	void copy(devArray toCopy, std::uint64_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
 	{
 		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)toCopy, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
 		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)toCopy, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
 	}
 
-	size_t size() { return currentSizeBytes / sizeof(devType); }
-	size_t sizeBytes() { return currentSizeBytes; }
+	std::uint64_t size() { return currentSizeBytes / sizeof(devType); }
+	std::uint64_t sizeBytes() { return currentSizeBytes; }
 
 	cuMM() {};
-	cuMM(size_t elems) //same as cuMalloc cuz overhead 'n stuff
+	cuMM(std::uint64_t elems) //same as cuMalloc cuz overhead 'n stuff
 	{
 		currentSizeBytes = sizeof(devType) * elems;
 		cudaMalloc(&data, currentSizeBytes);
 	};
 	~cuMM() { std::thread(free); }
 
-	devType& operator[] (const size_t& index) { return this->data[index]; }
+	devType& operator[] (const std::uint64_t& index) { return this->data[index]; }
 };
