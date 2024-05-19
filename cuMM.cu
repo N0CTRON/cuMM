@@ -50,8 +50,8 @@ public:
 	template <typename devArray>
 	void copy(devArray hostData, std::uint64_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
 	{
-		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)&hostData, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
-		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)&hostData, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
+		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)hostData, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
+		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)hostData, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
 	}
 
 	std::uint64_t size() { return currentSizeBytes / sizeof(devType); }
