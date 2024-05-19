@@ -48,10 +48,10 @@ public:
 	}
 
 	template <typename devArray>
-	void copy(devArray toCopy, std::uint64_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
+	void copy(devArray hostData, std::uint64_t size, bool toOrFrom) //true = to / to CUDA, false = from / to host
 	{
-		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)toCopy, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
-		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)toCopy, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
+		if (toOrFrom && data != nullptr) cudaMemcpy(data, (void*)&hostData, std::min(currentSizeBytes, size), cudaMemcpyHostToDevice);
+		else if (!toOrFrom && data != nullptr) cudaMemcpy((void*)&hostData, data, std::min(currentSizeBytes, size), cudaMemcpyDeviceToHost);
 	}
 
 	std::uint64_t size() { return currentSizeBytes / sizeof(devType); }
@@ -64,6 +64,4 @@ public:
 		cudaMalloc(&data, currentSizeBytes);
 	};
 	~cuMM() { std::thread(free); }
-
-	devType& operator[] (const std::uint64_t& index) { return this->data[index]; }
 };
