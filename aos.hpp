@@ -5,7 +5,7 @@ template <typename arrType>
 class AOS //AOS = array on steroids
 {
 private:
-	std::uint64_t vsize;
+	std::uint64_t vsize = 0;
 
 public:
 	arrType* data;
@@ -13,14 +13,14 @@ public:
 	void init(std::uint64_t nSize)
 	{
 		vsize = nSize;
-		data = (arrType*)malloc(sizeof(arrType) * nSize);
+		data = (arrType*)malloc((constexpr)sizeof(arrType) * nSize);
 		for (std::uint64_t i = 0; i < nSize; ++i) this->data[i] = arrType(NULL);
 	}
 
 	void init(std::uint64_t nSize, arrType defaultVal)
 	{
 		vsize = nSize;
-		data = (arrType*)malloc(sizeof(arrType) * nSize);
+		data = (arrType*)malloc((constexpr)sizeof(arrType) * nSize);
 		for (std::uint64_t i = 0; i < nSize; ++i) this->data[i] = (arrType)defaultVal;
 	}
 
@@ -44,13 +44,27 @@ public:
 		free(data);
 		data = nullptr;
 	}
-
+	
 	std::uint64_t size() { return vsize; }
 
+	AOS(std::initializer_list<arrType> list)
+	{
+		vsize = list.size();
+		data = (arrType*)malloc((constexpr)sizeof(arrType) * vsize);
+		std::copy(list.begin(), list.end(), data);
+	}
 	AOS(std::uint64_t nSize) { init(nSize); };
 	AOS(std::uint64_t nSize, arrType defaultVal) { init(nSize, defaultVal); };
+	AOS() : AOS({}) {}
 	AOS() {};
 	~AOS() { std::thread(suicide); } //<-- Threading was tested, about 1.9 times faster than calling "suicide" from main thread
 
 	arrType& operator[](const std::uint64_t index) { return this->data[index]; }
+	AOS& operator=(std::initializer_list<arrType> list)
+	{
+		vsize = list.size();
+		data = (arrType*)malloc((constexpr)sizeof(arrType) * vsize);
+		std::copy(list.begin(), list.end(), data);
+		return *this;
+	}
 };
