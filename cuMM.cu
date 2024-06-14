@@ -64,4 +64,7 @@ public:
 		cudaMalloc(&data, currentSizeBytes);
 	};
 	~cuMM() { std::thread(free); }
+
+	__device__ devType& operator[](std::uint64_t index) { return ((devType*)data)[index]; }
+	__device__ const devType& operator[](std::uint64_t index) const { return ((devType*)data)[index]; }
 };
