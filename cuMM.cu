@@ -33,6 +33,8 @@ public:
 			return;
 		}
 
+                if (newElems == this->size()) return;
+
 		devType* newPtr = nullptr;
 		std::uint64_t newSize = sizeof(devType) * newElems;
 		cudaMalloc(&newPtr, newSize);
